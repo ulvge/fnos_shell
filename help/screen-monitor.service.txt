@@ -1,2 +1,20 @@
+服务路径：
 /etc/systemd/system/screen-monitor.service
 
+服务脚本：
+[Unit]
+Description=Monitor keyboard activity to manage screen state
+After=multi-user.target
+
+[Service]
+ExecStart=/home/admin/autolcd.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+开机自动启动
+sudo systemctl enable screen-monitor.service
+运行脚本
+systemctl start screen-monitor.service
