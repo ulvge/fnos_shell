@@ -18,3 +18,8 @@ WantedBy=multi-user.target
 sudo systemctl enable screen-monitor.service
 运行脚本
 systemctl start screen-monitor.service
+运行脚本
+systemctl stop screen-monitor.service
+
+重启脚本
+systemctl restart screen-monitor.service
