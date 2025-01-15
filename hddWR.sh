@@ -1,0 +1,1 @@
+dd if=/dev/zero of=/tmp/testfile bs=1M count=1024 oflag=direct
