@@ -1,0 +1,35 @@
+services:
+  alist:
+    image: ghcr.io/monlor/xiaoya-alist:latest # 使用的镜像，来源于 GitHub 容器注册表
+    volumes:
+      - /vol1/1000/docker/xiaoya/data:/data # 将容器中的 /data 目录映射到名为 xiaoya 的数据卷，用于持久化存储
+    ports:
+      - "5677:5678" # 宿主机端口 5677 映射到容器的 5678 端口，alist Web 服务
+      - "5345:2345" # 宿主机端口 5345 映射到容器的 2345 端口，备用端口或其他服务使用
+      - "5346:2346" # 宿主机端口 5346 映射到容器的 2346 端口，备用端口或其他服务使用
+    environment: # 定义环境变量，用于容器运行时的配置
+      TZ: Asia/Shanghai # 设置容器的时区为上海时区
+      ALIYUN_TOKEN: "05617f3191d54141b72fb5a05c5125c5" # 阿里云盘的访问令牌，需要用户填写 mytoken
+      ALIYUN_OPEN_TOKEN: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJjZmRlYzQ0ZDA3ZjI0YjhiYmNmYjBiMzNiNzkxZDRmNCIsImF1ZCI6Ijc2OTE3Y2NjY2Q0NDQxYzM5NDU3YTA0ZjYwODRmYjJmIiwiZXhwIjoxNzQ0NzMwNzIwLCJpYXQiOjE3MzY5NTQ3MjAsImp0aSI6IjY4ZmYwYjk1YzI5OTQzN2NiZmE1ZjAyZmVjYzEwOGIyIn0.rKN1weGPRG1hvn--Q0ss3JuXzABqgLMCu5JFccgNwAoxmTQruc-UEoMC5X5ZF0G7mcjZHeCK-g-WhI2zE16LEA" # 阿里云盘的refresh_token开放访问令牌，需要用户填写，不能用旧的t
+      ALIYUN_FOLDER_ID: "67879977a9c84b5f1a5a443da0062079f88958b8" # 阿里云盘的文件夹 ID，用于指定操作目录 temp_transfer_folder_id
+      QUARK_COOKIE: "" # 夸克网盘的 Cookie，需要用户填写，非必填。
+      PAN115_COOKIE: "" # 115 网盘的 Cookie，需要用户填写，非必填。
+      AUTO_UPDATE_ENABLED: "true" # 是否启用自动更新小雅 alist 的功能，"true" 启用，"false" 禁用
+      AUTO_CLEAR_ENABLED: "true" # 是否启用阿里云盘自动清理功能，"true" 启用，"false" 禁用
+      AUTO_CLEAR_INTERVAL: "10" # 自动清理间隔时间，单位为分钟，范围为 0-60，默认为空（使用默认设置）
+      PIKPAK_USER: "" # PikPak 用户名和密码，格式为 `email:password`，非必填
+      TVBOX_SECURITY: "false" # 是否启用 TVBox 随机订阅地址功能，"true" 启用，"false" 禁用
+      WEBDAV_PASSWORD: "" # WebDAV 的用户密码，默认用户为 dav
+      ALIST_ADDR: "http://alist:5678" # 容器内部的 alist 地址，通常不需要修改
+      EMBY_ENABLED: "false" # 是否启用 Emby 功能，"true" 启用，"false" 禁用
+      JELLYFIN_ENABLED: "false" # 是否启用 Jellyfin 功能，"true" 启用，"false" 禁用
+      AUTO_UPDATE_EMBY_CONFIG_ENABLED: "false" # 是否启用 Emby 配置的自动更新功能
+      AUTO_UPDATE_EMBY_INTERVAL: "" # Emby 配置自动更新的间隔时间，单位为天
+      AUTO_UPDATE_EMBY_METADATA_ENABLED: "false" # 是否启用 Emby 元数据的自动更新功能
+      CLEAR_TEMP: "true" # 下载解压后是否清理临时文件，"true" 启用，"false" 禁用
+    restart: unless-stopped # 设置容器的重启策略，容器意外停止时自动重启
+    networks:
+      - default # 指定容器使用的网络，这里使用默认网络
+
+networks:
+  default: # 定义默认网络，容器间可以通过服务名互相访问
