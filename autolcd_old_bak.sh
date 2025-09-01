@@ -3,39 +3,33 @@
 trap "echo 'Service stopping...'; kill 0; exit" SIGTERM
 
 # define vars
-TIMEOUT=60
-current_status=1
-STATUS_FILE="/tmp/screen_status"  # 建议使用文件来存储状态
-
-# 安装 sudo apt install vbetool
-SCREEN_OFF_CMD="vbetool dpms suspend"
-SCREEN_ON_CMD="vbetool dpms on"
+TIMEOUT=60 # 
+SCREEN_OFF_CMD="setterm --blank force --term linux < /dev/tty1"
+SCREEN_ON_CMD="setterm --blank poke --term linux < /dev/tty1"
+DPMS_PATH="/sys/class/drm/card0-LVDS-1/dpms"
 
 last_activity=$(date +%s)
+# last_activity
 LAST_ACTIVITY_FILE="/tmp/last_activity"
 
-# 初始化状态文件
-echo "$current_status" > "$STATUS_FILE"
 
 screen_status() {
-    if [[ $(cat "$STATUS_FILE") -eq 1 ]]; then
-        echo 1 # on
+    if [[ $(cat $DPMS_PATH) == "Off" ]]; then
+        echo 0 # off 
     else
-        echo 0 # off
+        echo 1 # on
     fi
 }
-
 # monitor 
 monitor_keyboard() {
     while read -r event; do
         last_act=$(date +%s)
-        echo "$last_act" > "$LAST_ACTIVITY_FILE"
-        
-        # if lcd is OFF, then turn ON
-        if [[ $(screen_status) -eq 0 ]]; then
+        echo "$last_act" > $LAST_ACTIVITY_FILE
+        # logger "monitor last_activity: $last_act"
+        # if lcd is OFF ,then ON
+        if [[ $screen_status -eq 0 ]]; then
             logger "Screen is off -> on"
             eval "$SCREEN_ON_CMD"
-            echo "1" > "$STATUS_FILE"  # 更新状态
         fi
     done < <(stdbuf -oL evtest /dev/input/event0 2>/dev/null | grep --line-buffered "value 1")
 }
@@ -48,16 +42,17 @@ check_timeout() {
 
         # last_activity
         if [[ -f $LAST_ACTIVITY_FILE ]]; then
-            last_activity=$(cat "$LAST_ACTIVITY_FILE")
+            last_activity=$(cat $LAST_ACTIVITY_FILE)
         fi
 
         elapsed=$((current_time - last_activity))
+        #logger "screen Checking timeout: $elapsed seconds elapsed."
+        #logger "last_activity: $last_activity"
 
         # if no key & lcd is ON, then OFF
         if [[ $elapsed -ge $TIMEOUT && $(screen_status) -eq 1 ]]; then
             logger "Screen is on -> off"
             eval "$SCREEN_OFF_CMD"
-            echo "0" > "$STATUS_FILE"  # 更新状态
         fi
     done
 }
@@ -65,4 +60,5 @@ check_timeout() {
 # start task
 monitor_keyboard &
 check_timeout &
-wait
+wait 
+

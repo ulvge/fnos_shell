@@ -1,7 +1,7 @@
-·şÎñÂ·¾¶£º
+æœåŠ¡è·¯å¾„ï¼š
 /etc/systemd/system/screen-monitor.service
 
-·şÎñ½Å±¾£º
+æœåŠ¡è„šæœ¬ï¼š
 [Unit]
 Description=Monitor keyboard activity to manage screen state
 After=multi-user.target
@@ -14,12 +14,12 @@ Restart=always
 WantedBy=multi-user.target
 
 
-¿ª»ú×Ô¶¯Æô¶¯
+å¼€æœºè‡ªåŠ¨å¯åŠ¨
 sudo systemctl enable screen-monitor.service
-ÔËĞĞ½Å±¾
-systemctl start screen-monitor.service
-ÔËĞĞ½Å±¾
-systemctl stop screen-monitor.service
+è¿è¡Œè„šæœ¬
+sudo systemctl start screen-monitor.service
+åœæ­¢è„šæœ¬
+sudo systemctl stop screen-monitor.service
 
-ÖØÆô½Å±¾
-systemctl restart screen-monitor.service
+é‡å¯è„šæœ¬
+sudo systemctl restart screen-monitor.service
